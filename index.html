@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SubCat — Hunt Down Flaky Tests</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Product palette — exactly from app CSS */
+      --bg:         #1a1a2e;
+      --surface:    #16213e;
+      --surface-2:  #0d1b36;
+      --border:     #2a2a3e;
+      --border-2:   #333;
+
+      --text:       #e0e0e0;
+      --text-muted: #888;
+      --text-sub:   #666;
+      --text-dim:   #444;
+      --white:      #ffffff;
+
+      /* Accents — visible on dark bg */
+      --accent:          #a78bfa;          /* light purple */
+      --accent-bright:   #c4b5fd;          /* lighter purple for small text */
+      --grad-text: linear-gradient(135deg, #93c5fd, #c4b5fd); /* visible on dark */
+      --grad-ui:   linear-gradient(135deg, #0f3460, #533483); /* buttons / borders */
+      --purple:    #533483;
+      --purple-mid:#7c5cbc;
+
+      --green:  #2ecc71;
+      --red:    #e74c3c;
+      --orange: #f39c12;
+
+      /* Typography — system-first, same as app */
+      --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'IBM Plex Mono', 'SF Mono', 'Fira Code', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(ellipse 60% 35% at 50% 0%, rgba(83,52,131,0.14) 0%, transparent 70%),
+        linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+      background-size: auto, 52px 52px, 52px 52px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── UTILS ── */
+    .accent-text {
+      background: var(--grad-text);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 48px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s, backdrop-filter 0.3s;
+    }
+    nav.scrolled {
+      border-color: var(--border-2);
+      background: rgba(26,26,46,0.94);
+      backdrop-filter: blur(16px);
+    }
+    .nav-logo {
+      font-family: var(--font-sans); font-size: 18px; font-weight: 700;
+      color: var(--white); text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .nav-logo img { width: 28px; height: 28px; object-fit: contain; }
+    .nav-right { display: flex; align-items: center; gap: 28px; }
+    .nav-link { font-size: 13px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .nav-link:hover { color: var(--text); }
+
+    .btn {
+      font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+      border-radius: 8px; padding: 9px 18px; cursor: pointer;
+      text-decoration: none; transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 8px; border: none;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: var(--grad-ui); color: #fff;
+      box-shadow: 0 2px 12px rgba(83,52,131,0.35);
+    }
+    .btn-primary:hover { box-shadow: 0 4px 24px rgba(83,52,131,0.55); filter: brightness(1.1); }
+    .btn-ghost {
+      color: var(--accent); background: transparent;
+      border: 1px solid rgba(83,52,131,0.55);
+    }
+    .btn-ghost:hover { background: rgba(83,52,131,0.14); border-color: var(--accent); }
+    .btn-dashed {
+      color: var(--white); background: transparent;
+      border: 1px dashed var(--border-2); width: 100%;
+      justify-content: center; font-size: 13px; padding: 12px;
+    }
+    .btn-dashed:hover { border-color: #888; color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 80px 48px 80px; z-index: 1;
+      overflow: hidden;
+    }
+    .hero-bg-illo {
+      position: absolute; right: -80px; bottom: -60px;
+      width: 600px; opacity: 0.035;
+      pointer-events: none; user-select: none;
+      filter: invert(1);
+    }
+    .hero-grid {
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 72px; align-items: center;
+    }
+    .hero-text { animation: fadeUp 0.6s ease both; }
+
+    .eyebrow {
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+    }
+    .eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: glow-pulse 2s ease-in-out infinite;
+    }
+    @keyframes glow-pulse {
+      0%,100% { box-shadow: 0 0 6px var(--accent); }
+      50%      { box-shadow: 0 0 14px var(--accent), 0 0 28px rgba(167,139,250,0.3); }
+    }
+
+    h1 {
+      font-family: var(--font-sans);
+      font-size: clamp(36px, 4.2vw, 60px);
+      font-weight: 700; line-height: 1.08;
+      color: var(--white); margin-bottom: 22px;
+      letter-spacing: -0.03em;
+    }
+    h1 .accent-text { display: block; }
+
+    .hero-sub {
+      font-size: 16px; color: var(--text-muted);
+      line-height: 1.75; margin-bottom: 36px;
+      max-width: 440px; font-weight: 400;
+    }
+    .hero-sub strong { color: var(--text); font-weight: 600; }
+    .hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .hero-actions .btn { font-size: 13px; padding: 12px 24px; }
+    .hero-footnote {
+      font-family: var(--font-mono); font-size: 11px;
+      color: var(--text-muted);    /* was --text-dim (#444) → now #888 */
+      margin-top: 18px; letter-spacing: 0.03em;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .os-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+      color: var(--accent-bright);
+      background: rgba(83,52,131,0.2); border: 1px solid rgba(83,52,131,0.45);
+      border-radius: 4px; padding: 2px 8px;
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+
+    /* ── APP WINDOW MOCKUP ── */
+    .hero-mockup { animation: fadeUp 0.6s 0.15s ease both; position: relative; }
+    .hero-mockup::after {
+      content: '';
+      position: absolute; bottom: -60px; left: 5%; right: 5%; height: 60px;
+      background: radial-gradient(ellipse, rgba(83,52,131,0.4) 0%, transparent 70%);
+      filter: blur(14px);
+    }
+    .app-window {
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 80px rgba(0,0,0,0.55), 0 0 60px rgba(83,52,131,0.1);
+    }
+    .window-chrome {
+      background: var(--surface); border-bottom: 1px solid var(--border-2);
+      padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+    }
+    .tls { display: flex; gap: 6px; }
+    .tl { width: 11px; height: 11px; border-radius: 50%; }
+    .tl-r { background: #ff5f57; } .tl-y { background: #febc2e; } .tl-g { background: #28c840; }
+    .win-title {
+      font-family: var(--font-sans); font-size: 13px; font-weight: 700;
+      color: var(--white); margin: 0 auto;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .win-title img { width: 18px; height: 18px; object-fit: contain; }
+
+    .window-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+
+    .mock-label {
+      font-family: var(--font-sans); font-size: 11px; font-weight: 600;
+      color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 0 2px; margin-bottom: 2px;
+    }
+
+    /* PR list (like in screenshot) */
+    .mock-pr-list {
+      border: 1px solid var(--border-2); border-radius: 10px; overflow: hidden;
+    }
+    .mock-pr-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 12px; border-bottom: 1px solid #1e1e30;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .mock-pr-row:last-child { border-bottom: none; }
+    .mock-pr-row:hover { background: rgba(255,255,255,0.03); }
+    .mock-pr-title { font-size: 12px; color: var(--text); }
+    .mock-pr-num { font-family: var(--font-mono); font-size: 11px; color: var(--text-sub); }
+
+    /* Selected run card — red border like screenshot */
+    .mock-run-card {
+      background: var(--surface); border: 1px solid rgba(231,76,60,0.7);
+      border-radius: 10px; padding: 12px 14px;
+      opacity: 0; transform: translateY(6px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .mock-run-card.visible { opacity: 1; transform: none; }
+    .mock-run-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .mock-run-title { font-size: 13px; font-weight: 600; color: var(--white); }
+    .mock-run-btns { display: flex; gap: 6px; }
+    .mock-run-btn {
+      font-family: var(--font-sans); font-size: 11px; font-weight: 600;
+      border: 1px solid var(--border-2); border-radius: 6px;
+      background: none; color: var(--text-muted); padding: 3px 10px; cursor: pointer;
+    }
+    .mock-run-status {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .sd { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sd-fail { background: var(--red); }
+    .sd-pass { background: var(--green); }
+    .sd-run  { background: var(--orange); animation: pulse-dot 1.5s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .mock-repeat-row {
+      display: flex; align-items: center; gap: 8px;
+      border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px;
+    }
+    .mock-repeat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-sub); }
+    .mock-iter-dots { display: flex; gap: 4px; }
+    .iter-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    .mock-watch-btn {
+      font-family: var(--font-sans); font-size: 13px; font-weight: 600;
+      width: 100%; padding: 10px; background: none;
+      border: 1px dashed var(--white); border-radius: 8px;
+      color: var(--white); cursor: pointer; letter-spacing: 0.01em;
+      transition: border-color 0.2s, color 0.2s;
+      opacity: 0; animation: fadeIn 0.4s 1.8s ease forwards;
+    }
+    .mock-watch-btn:hover { border-color: #888; color: var(--text); }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    /* ── SECTIONS ── */
+    section { position: relative; z-index: 1; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+
+    .section-eyebrow {
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase;
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-eyebrow::before { content: ''; width: 14px; height: 1px; background: var(--accent); }
+
+    h2 {
+      font-family: var(--font-sans); font-size: clamp(26px, 2.8vw, 42px);
+      font-weight: 700; line-height: 1.1;
+      letter-spacing: -0.025em; color: var(--white);
+    }
+
+    /* ── PAIN ── */
+    .pain { padding: 96px 0; border-top: 1px solid var(--border); }
+    .pain-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; align-items: start; }
+    .pain-cards {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+    }
+    .pain-card { background: var(--surface); padding: 24px; }
+    .pain-icon {
+      width: 30px; height: 30px; border-radius: 7px;
+      background: rgba(83,52,131,0.2); border: 1px solid rgba(83,52,131,0.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; margin-bottom: 12px;
+    }
+    .pain-card h3 { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 6px; letter-spacing: -0.01em; }
+    .pain-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── FEATURES ── */
+    .features { padding: 96px 0; border-top: 1px solid var(--border); }
+    .features-header { text-align: center; margin-bottom: 56px; }
+
+    .feature-hero-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 48px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
+      align-items: center; margin-bottom: 16px; position: relative; overflow: hidden;
+    }
+    .feature-hero-card::before {
+      content: '';
+      position: absolute; top: 0; right: 0; bottom: 0; width: 50%;
+      background: radial-gradient(ellipse at top right, rgba(83,52,131,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .feature-badge {
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent-bright); background: rgba(83,52,131,0.18);
+      border: 1px solid rgba(83,52,131,0.45);
+      border-radius: 4px; padding: 4px 10px;
+      display: inline-block; margin-bottom: 18px;
+    }
+    .feature-hero-card h3 {
+      font-size: 30px; font-weight: 700; line-height: 1.1;
+      color: var(--white); margin-bottom: 14px; letter-spacing: -0.025em;
+    }
+    .feature-hero-card p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 12px; }
+
+    /* Repeat visual */
+    .repeat-rows { display: flex; flex-direction: column; gap: 6px; }
+    .rrow {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface-2); border: 1px solid var(--border-2);
+      border-radius: 8px; padding: 10px 14px;
+      opacity: 0; transition: opacity 0.35s ease;
+    }
+    .rrow.in { opacity: 1; }
+    .rnum { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); width: 18px; }
+    .rbar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .rbar-fill { height: 100%; border-radius: 2px; }
+    .fill-green { background: var(--green); }
+    .fill-red   { background: var(--red); }
+    .fill-run   { background: var(--orange); animation: pulse-bar 2s ease infinite; }
+    @keyframes pulse-bar { 0%,100%{width:28%} 50%{width:66%} }
+    .rresult { font-family: var(--font-mono); font-size: 10px; width: 36px; text-align: right; font-weight: 600; }
+    .c-green  { color: var(--green); }
+    .c-red    { color: var(--red); }
+    .c-orange { color: var(--orange); }
+    .flake-summary {
+      background: rgba(83,52,131,0.12); border: 1px solid rgba(83,52,131,0.4);
+      border-radius: 6px; padding: 10px 14px; margin-top: 2px;
+      font-family: var(--font-mono); font-size: 11px; color: var(--accent-bright);
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .flake-summary.in { opacity: 1; }
+
+    /* Feature grid */
+    .feature-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .feature-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .feature-card:hover { border-color: rgba(83,52,131,0.55); box-shadow: 0 4px 24px rgba(83,52,131,0.1); }
+    .fc-icon {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: rgba(83,52,131,0.15); border: 1px solid rgba(83,52,131,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; margin-bottom: 16px;
+    }
+    .feature-card h4 { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 8px; letter-spacing: -0.01em; }
+    .feature-card p { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+
+    /* Markdown report feature — full-width card */
+    .report-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 40px 48px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+      align-items: start; margin-top: 16px; position: relative; overflow: hidden;
+    }
+    .report-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--green), rgba(46,204,113,0.2));
+    }
+    .report-card h4 { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 10px; letter-spacing: -0.02em; }
+    .report-card p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px; }
+    .report-card .feature-badge { margin-bottom: 14px; }
+    .report-preview {
+      background: var(--surface-2); border: 1px solid var(--border-2);
+      border-radius: 10px; overflow: hidden;
+    }
+    .report-preview-bar {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 8px 14px; display: flex; align-items: center; gap: 6px;
+    }
+    .rp-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .rp-dot-g { background: #28c840; } .rp-dot-y { background: #febc2e; } .rp-dot-r { background: #ff5f57; }
+    .rp-name { font-family: var(--font-mono); font-size: 10px; color: var(--text-sub); margin-left: 4px; }
+    .report-preview-body {
+      padding: 14px 16px;
+      font-family: var(--font-mono); font-size: 10.5px;
+      line-height: 1.65; color: var(--text-muted);
+    }
+    .rp-h1 { color: var(--white); font-weight: 700; font-size: 12px; margin-bottom: 4px; }
+    .rp-meta { color: var(--text-sub); margin-bottom: 10px; }
+    .rp-table-header { color: var(--text-sub); border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 4px; }
+    .rp-row { display: flex; align-items: center; gap: 10px; padding: 3px 0; }
+    .rp-pass { color: var(--green); } .rp-fail { color: var(--red); }
+    .rp-link { color: var(--accent); }
+    .rp-date { color: var(--text-dim); font-size: 10px; }
+    .rp-fail-tests { margin-top: 6px; padding: 6px 10px; background: rgba(231,76,60,0.07); border-left: 2px solid var(--red); border-radius: 3px; }
+    .rp-fail-test { color: #f87171; font-size: 10px; padding: 1px 0; }
+
+    /* ── OPEN SOURCE ── */
+    .oss { padding: 56px 0; border-top: 1px solid var(--border); }
+    .oss-inner {
+      display: flex; align-items: center; gap: 48px;
+      background: var(--surface); border: 1px solid rgba(83,52,131,0.4);
+      border-radius: 14px; padding: 36px 48px;
+      position: relative; overflow: hidden;
+    }
+    .oss-inner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at left, rgba(83,52,131,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .oss-icon {
+      font-size: 40px; flex-shrink: 0;
+      filter: grayscale(0.3);
+    }
+    .oss-text h3 { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 8px; letter-spacing: -0.02em; }
+    .oss-text p { font-size: 14px; color: var(--text-muted); line-height: 1.7; max-width: 560px; }
+    .oss-text .accent-text { font-weight: 600; }
+    .oss-action { margin-left: auto; flex-shrink: 0; }
+    .oss-action .btn { font-size: 13px; padding: 11px 22px; }
+
+    /* ── HOW IT WORKS ── */
+    .how { padding: 96px 0; border-top: 1px solid var(--border); }
+    .how-header { text-align: center; margin-bottom: 64px; }
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; position: relative; }
+    .steps::before {
+      content: '';
+      position: absolute; top: 20px;
+      left: calc(16.666% + 24px); right: calc(16.666% + 24px);
+      height: 1px; background: linear-gradient(90deg, #533483, rgba(83,52,131,0.15), #533483);
+    }
+    .step { padding: 0 40px; text-align: center; }
+    .step-n {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--surface-2); border: 1px solid rgba(83,52,131,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 14px; font-weight: 700;
+      color: var(--accent); margin: 0 auto 22px; position: relative; z-index: 1;
+    }
+    .step h3 { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 10px; letter-spacing: -0.01em; }
+    .step p { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+    .step code {
+      font-family: var(--font-mono); font-size: 11px;
+      background: rgba(83,52,131,0.2); border: 1px solid rgba(83,52,131,0.4);
+      border-radius: 4px; padding: 2px 6px; color: var(--accent-bright);
+    }
+
+    /* ── VS ── */
+    .vs { padding: 80px 0; border-top: 1px solid var(--border); }
+    .vs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .vs-card { border-radius: 12px; padding: 36px; }
+    .vs-card.them { background: var(--surface); border: 1px solid var(--border); opacity: 0.5; }
+    .vs-card.us { background: var(--surface); border: 1px solid rgba(83,52,131,0.5); position: relative; overflow: hidden; }
+    .vs-card.us::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--grad-ui); }
+    .vs-label { font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+    .vs-label.them { color: var(--text-dim); }
+    .vs-label.us { color: var(--accent); }
+    .vs-price { font-family: var(--font-sans); font-size: 50px; font-weight: 700; line-height: 1; margin-bottom: 4px; letter-spacing: -0.04em; }
+    .vs-price.them { color: var(--text-muted); }
+    .vs-price.us { background: var(--grad-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .vs-period { font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); margin-bottom: 20px; }
+    .vs-row { font-size: 13px; color: var(--text-muted); padding: 9px 0; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .chk { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+    .chk-y { background: rgba(46,204,113,0.12); color: var(--green); }
+    .chk-n { background: rgba(68,68,68,0.3); color: var(--text-dim); }
+
+    /* ── ROADMAP ── */
+    .roadmap { padding: 96px 0; border-top: 1px solid var(--border); }
+    .roadmap-header { text-align: center; margin-bottom: 56px; }
+    .roadmap-header p { font-size: 15px; color: var(--text-muted); margin-top: 12px; max-width: 480px; margin-left: auto; margin-right: auto; }
+
+    .roadmap-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .roadmap-item {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: border-color 0.2s;
+    }
+    .roadmap-item:hover { border-color: rgba(83,52,131,0.45); }
+    .roadmap-item-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .roadmap-item h4 { font-size: 14px; font-weight: 600; color: var(--white); letter-spacing: -0.01em; }
+    .roadmap-item p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .roadmap-tag {
+      font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      border-radius: 4px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0;
+    }
+    .tag-next { background: rgba(243,156,18,0.14); border: 1px solid rgba(243,156,18,0.35); color: var(--orange); }
+    .tag-planned { background: rgba(83,52,131,0.15); border: 1px solid rgba(83,52,131,0.35); color: var(--accent); }
+    .tag-exploring { background: rgba(255,255,255,0.05); border: 1px solid var(--border-2); color: var(--text-muted); }
+
+    /* ── JUMP INTERLUDE ── */
+    .jump-section {
+      padding: 60px 0; border-top: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .jump-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(83,52,131,0.07) 0%, transparent 70%);
+    }
+    .jump-inner {
+      display: flex; align-items: center; gap: 60px;
+      max-width: 860px; margin: 0 auto; padding: 0 48px; position: relative; z-index: 1;
+    }
+    .jump-img {
+      width: 160px; flex-shrink: 0;
+      animation: jump-bounce 1.3s ease-in-out infinite alternate;
+      filter: brightness(0) invert(1); opacity: 0.7;
+    }
+    @keyframes jump-bounce { from{transform:translateY(0)} to{transform:translateY(-14px)} }
+    .jump-text h3 { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 10px; letter-spacing: -0.02em; }
+    .jump-text p { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+    /* ── FOOTER CTA ── */
+    .cta-section {
+      padding: 120px 0; border-top: 1px solid var(--border);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-section::before {
+      content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 350px;
+      background: radial-gradient(ellipse at bottom, rgba(83,52,131,0.14) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-illo { position: absolute; right: calc(50% - 500px); bottom: 0; width: 220px; opacity: 0.06; filter: invert(1); pointer-events: none; }
+    .cta-section h2 { margin: 14px auto 18px; max-width: 540px; }
+    .cta-section p { font-size: 14px; color: var(--text-muted); margin-bottom: 36px; font-family: var(--font-mono); }
+    .cta-btns { display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .cta-btns .btn { font-size: 13px; padding: 14px 28px; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border); padding: 24px 48px;
+      position: relative; z-index: 1;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-left { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+    .footer-left img { width: 18px; opacity: 0.45; object-fit: contain; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .hero { padding: 90px 24px 60px; }
+      .hero-grid, .pain-layout, .feature-hero-card, .steps, .vs-grid, .roadmap-grid, .report-card, .oss-inner { grid-template-columns: 1fr; gap: 36px; }
+      .container { padding: 0 24px; }
+      .pain-cards { grid-template-columns: 1fr; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .steps::before { display: none; }
+      .step { padding: 0; text-align: left; display: flex; gap: 14px; align-items: flex-start; }
+      .step-n { margin: 0; flex-shrink: 0; }
+      .hero-bg-illo { display: none; }
+      .jump-inner { flex-direction: column; gap: 28px; text-align: center; }
+      .oss-action { margin-left: 0; }
+      footer { padding: 24px; flex-direction: column; gap: 16px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img src="../assets/little-subcat.png" alt="SubCat">
+    SubCat
+  </a>
+  <div class="nav-right">
+    <a href="#features" class="nav-link">Features</a>
+    <a href="#roadmap" class="nav-link">Roadmap</a>
+    <a href="https://github.com/semisse/subcat" class="nav-link">GitHub</a>
+    <a href="#download" class="btn btn-primary">↓ Download</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <img class="hero-bg-illo" src="../assets/little-subcat.png" alt="">
+
+  <div class="hero-grid">
+    <div class="hero-text">
+      <div class="eyebrow"><div class="eyebrow-dot"></div>macOS Developer Tool</div>
+      <h1>Tired of babysitting<br><span class="accent-text">your pipelines?</span></h1>
+      <p class="hero-sub">
+        SubCat watches your GitHub Actions runs and hunts down flaky tests — so you can stay in flow.
+        Run any workflow <strong>5×, 10×, N×</strong> with one click.
+      </p>
+      <div class="hero-actions">
+        <a href="#download" class="btn btn-primary">↓ Download for Mac</a>
+        <a href="https://github.com/semisse/subcat" class="btn btn-ghost">View on GitHub</a>
+      </div>
+      <div class="hero-footnote">
+        <span class="os-badge">Open Source</span>
+        Signed &amp; notarized · Apple Silicon · Free
+      </div>
+    </div>
+
+    <div class="hero-mockup">
+      <div class="app-window">
+        <div class="window-chrome">
+          <div class="tls">
+            <div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div>
+          </div>
+          <div class="win-title">
+            <img src="../assets/little-subcat.png" alt=""> SubCat
+          </div>
+        </div>
+        <div class="window-body">
+          <div class="mock-label">My PRs</div>
+          <div class="mock-pr-list">
+            <div class="mock-pr-row">
+              <span class="mock-pr-title">CSX-438 Enable accessibility unit tests</span>
+              <span class="mock-pr-num">#16136</span>
+            </div>
+            <div class="mock-pr-row">
+              <span class="mock-pr-title">CSX-71 Fix race condition in version dropdown</span>
+              <span class="mock-pr-num">#16230</span>
+            </div>
+            <div class="mock-pr-row">
+              <span class="mock-pr-title">CSX-463 Add Karma to Jest migration prompt</span>
+              <span class="mock-pr-num">#16177</span>
+            </div>
+          </div>
+
+          <div class="mock-run-card" id="runCard">
+            <div class="mock-run-card-header">
+              <span class="mock-run-title">CSX-438 Enable accessibility unit tests</span>
+              <div class="mock-run-btns">
+                <button class="mock-run-btn">Open</button>
+                <button class="mock-run-btn">×</button>
+              </div>
+            </div>
+            <div class="mock-run-status">
+              <div class="sd sd-fail"></div>
+              failure · run 2 of 5
+            </div>
+            <div class="mock-repeat-row">
+              <span class="mock-repeat-label">×5 repeat</span>
+              <div class="mock-iter-dots" id="iterDots"></div>
+            </div>
+          </div>
+
+          <button class="mock-watch-btn">+ Watch Run</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAIN -->
+<section class="pain">
+  <div class="container">
+    <div class="pain-layout">
+      <div>
+        <div class="section-eyebrow reveal">The problem</div>
+        <h2 class="reveal">Your CI is green.<br><span class="accent-text">Your tests aren't.</span></h2>
+      </div>
+      <div class="pain-cards reveal">
+        <div class="pain-card">
+          <div class="pain-icon">🎲</div>
+          <h3>Non-deterministic failures</h3>
+          <p>Passes locally, passes in review, then fails in main. Nobody can reproduce it.</p>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">⏱</div>
+          <h3>Manual retry loops</h3>
+          <p>Engineers watching CI, clicking Re-run, pasting URLs in Slack. Hours lost every week.</p>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">💸</div>
+          <h3>$299/month alternatives</h3>
+          <p>BuildPulse requires cloud hooks, org admin access, and a budget approval.</p>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">🔎</div>
+          <h3>No isolation</h3>
+          <p>Most tools say "it failed" — not which test, not how often, not why.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="features-header">
+      <div class="section-eyebrow reveal" style="justify-content:center">Features</div>
+      <h2 class="reveal">Built for one thing.<br><span class="accent-text">Done right.</span></h2>
+    </div>
+
+    <!-- Repeat Mode -->
+    <div class="feature-hero-card reveal">
+      <div>
+        <div class="feature-badge">Core differentiator</div>
+        <h3>Repeat Mode.<br><span class="accent-text">Find the flake.</span></h3>
+        <p>Set any run to execute N times automatically. Each iteration is tracked, logged, and compared. Flaky tests expose themselves when you run them enough.</p>
+        <p style="font-size:12px;color:var(--text-dim);font-family:var(--font-mono)">No webhooks. No org admin. No SaaS. Paste a URL. Set a repeat count.</p>
+      </div>
+      <div class="repeat-rows" id="repeatRows">
+        <div class="rrow"><span class="rnum">1×</span><div class="rbar"><div class="rbar-fill fill-green" style="width:100%"></div></div><span class="rresult c-green">PASS</span></div>
+        <div class="rrow"><span class="rnum">2×</span><div class="rbar"><div class="rbar-fill fill-red" style="width:100%"></div></div><span class="rresult c-red">FAIL</span></div>
+        <div class="rrow"><span class="rnum">3×</span><div class="rbar"><div class="rbar-fill fill-green" style="width:100%"></div></div><span class="rresult c-green">PASS</span></div>
+        <div class="rrow"><span class="rnum">4×</span><div class="rbar"><div class="rbar-fill fill-red" style="width:100%"></div></div><span class="rresult c-red">FAIL</span></div>
+        <div class="rrow"><span class="rnum">5×</span><div class="rbar"><div class="rbar-fill fill-run"></div></div><span class="rresult c-orange">…</span></div>
+        <div class="flake-summary" id="flakeSummary">⚠ Flake rate: 2/5 · UserAuthTest · SessionTokenTest</div>
+      </div>
+    </div>
+
+    <!-- 3 feature cards -->
+    <div class="feature-grid">
+      <div class="feature-card reveal">
+        <div class="fc-icon">🔔</div>
+        <h4>Watch Mode</h4>
+        <p>Paste a GitHub Actions run URL. Get a native macOS notification when it finishes. No tab watching, no refresh loops.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon">📋</div>
+        <h4>Run History</h4>
+        <p>Every run, every iteration — logged with status, duration, and failed test names. Persists across app restarts.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon">🔗</div>
+        <h4>PR Integration</h4>
+        <p>Paste a PR URL and SubCat resolves the workflows automatically. Pick which run to watch from a list of your open PRs.</p>
+      </div>
+    </div>
+
+    <!-- Markdown Report — full-width, highlighted -->
+    <div class="report-card reveal">
+      <div>
+        <div class="feature-badge" style="color:var(--green);background:rgba(46,204,113,0.1);border-color:rgba(46,204,113,0.3)">Report Generation</div>
+        <h4>Markdown reports.<br>Built-in.</h4>
+        <p>After every repeat run, SubCat exports a structured <code style="font-family:var(--font-mono);font-size:12px;background:rgba(255,255,255,0.07);border-radius:4px;padding:2px 6px">.md</code> report with a table of results, clickable run links, and per-iteration failed test names. Drop it in a PR comment or your team's wiki.</p>
+        <p>No extra tooling. No parsing. One click.</p>
+      </div>
+      <div class="report-preview">
+        <div class="report-preview-bar">
+          <div class="rp-dot rp-dot-r"></div>
+          <div class="rp-dot rp-dot-y"></div>
+          <div class="rp-dot rp-dot-g"></div>
+          <span class="rp-name">subcat-report-12847301.md</span>
+        </div>
+        <div class="report-preview-body">
+          <div class="rp-h1"># CI / test (ubuntu-latest)</div>
+          <div class="rp-meta">**Runs:** 5 · **Passed:** 3 · **Failed:** 2</div>
+          <div style="margin-top:8px">
+            <div class="rp-table-header">| Run # | Result | Duration | Failed Tests |</div>
+            <div class="rp-row"><span class="rp-link">[1]</span><span class="rp-pass">✅ pass</span><span class="rp-date">2m 14s</span><span>—</span></div>
+            <div class="rp-row"><span class="rp-link">[2]</span><span class="rp-fail">❌ fail</span><span class="rp-date">1m 58s</span><span class="rp-fail" style="font-size:9px">2 tests</span></div>
+            <div class="rp-row"><span class="rp-link">[3]</span><span class="rp-pass">✅ pass</span><span class="rp-date">2m 07s</span><span>—</span></div>
+            <div class="rp-row"><span class="rp-link">[4]</span><span class="rp-fail">❌ fail</span><span class="rp-date">2m 01s</span><span class="rp-fail" style="font-size:9px">2 tests</span></div>
+            <div class="rp-row"><span class="rp-link">[5]</span><span class="rp-pass">✅ pass</span><span class="rp-date">2m 11s</span><span>—</span></div>
+          </div>
+          <div class="rp-fail-tests" style="margin-top:8px">
+            <div class="rp-fail-test">UserAuthTest::testSessionExpiry</div>
+            <div class="rp-fail-test">SessionTokenTest::testRefresh</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OPEN SOURCE -->
+<section class="oss">
+  <div class="container">
+    <div class="oss-inner reveal">
+      <div class="oss-icon">⚙</div>
+      <div class="oss-text">
+        <h3>Fully open source. No strings attached.</h3>
+        <p>SubCat is <span class="accent-text">MIT licensed</span> and built in the open. No tracking, no telemetry, no accounts. Your GitHub token never leaves your machine — it's encrypted with macOS <code style="font-family:var(--font-mono);font-size:12px;background:rgba(255,255,255,0.07);border-radius:4px;padding:2px 5px">safeStorage</code>. Read the code, fork it, improve it.</p>
+      </div>
+      <div class="oss-action">
+        <a href="https://github.com/semisse/subcat" class="btn btn-ghost">View on GitHub →</a>
+        <a href="https://github.com/sponsors/semisse" class="btn btn-ghost" style="margin-top:8px">♥ Sponsor</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="container">
+    <div class="how-header">
+      <div class="section-eyebrow reveal" style="justify-content:center">How it works</div>
+      <h2 class="reveal">Three steps.<br><span class="accent-text">Zero friction.</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-n">1</div>
+        <div>
+          <h3>Connect GitHub</h3>
+          <p>Sign in via OAuth Device Flow — no config files. Token encrypted with macOS <code>safeStorage</code>.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-n">2</div>
+        <div>
+          <h3>Paste &amp; set</h3>
+          <p>Paste a GitHub Actions run or PR URL. Set a repeat count — <code>×1</code> to watch, <code>×10</code> to hunt flakes.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-n">3</div>
+        <div>
+          <h3>Read the pattern</h3>
+          <p>SubCat polls every 15s, triggers reruns, and surfaces which tests failed. Native notification when done.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VS PRICING -->
+<section class="vs">
+  <div class="container">
+    <div class="vs-grid">
+      <div class="vs-card them reveal">
+        <div class="vs-label them">The alternative</div>
+        <div class="vs-price them">$299</div>
+        <div class="vs-period">per month, billed annually</div>
+        <div class="vs-row"><div class="chk chk-y">✓</div>Flaky test detection</div>
+        <div class="vs-row"><div class="chk chk-n">–</div>Requires org admin &amp; webhooks</div>
+        <div class="vs-row"><div class="chk chk-n">–</div>Cloud SaaS — your data leaves</div>
+        <div class="vs-row"><div class="chk chk-n">–</div>Needs budget approval</div>
+        <div class="vs-row"><div class="chk chk-n">–</div>Closed source</div>
+      </div>
+      <div class="vs-card us reveal">
+        <div class="vs-label us">SubCat</div>
+        <div class="vs-price us">Free</div>
+        <div class="vs-period">forever · MIT licensed · open source</div>
+        <div class="vs-row"><div class="chk chk-y">✓</div>Flaky test detection</div>
+        <div class="vs-row"><div class="chk chk-y">✓</div>No webhooks, no org access needed</div>
+        <div class="vs-row"><div class="chk chk-y">✓</div>Runs locally — nothing leaves your machine</div>
+        <div class="vs-row"><div class="chk chk-y">✓</div>Download and run in 60 seconds</div>
+        <div class="vs-row"><div class="chk chk-y">✓</div>Open source — read &amp; fork the code</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="roadmap" id="roadmap">
+  <div class="container">
+    <div class="roadmap-header">
+      <div class="section-eyebrow reveal" style="justify-content:center">Roadmap</div>
+      <h2 class="reveal">What's next.</h2>
+      <p class="reveal">SubCat ships fast. Here's what's coming.</p>
+    </div>
+    <div class="roadmap-grid">
+      <div class="roadmap-item reveal">
+        <div class="roadmap-item-header">
+          <h4>Paste-and-go</h4>
+          <span class="roadmap-tag tag-next">Next</span>
+        </div>
+        <p>Paste a valid GitHub Actions URL and SubCat starts watching immediately — no extra click required.</p>
+      </div>
+      <div class="roadmap-item reveal">
+        <div class="roadmap-item-header">
+          <h4>Rerun failed only</h4>
+          <span class="roadmap-tag tag-next">Next</span>
+        </div>
+        <p>Re-trigger only the failed jobs instead of the full workflow. Faster flake confirmation, less CI spend.</p>
+      </div>
+      <div class="roadmap-item reveal">
+        <div class="roadmap-item-header">
+          <h4>Watch without limit</h4>
+          <span class="roadmap-tag tag-next">Next</span>
+        </div>
+        <p>Continuous watch mode — keep re-running a workflow until you manually stop it. Essential for overnight flake hunts.</p>
+      </div>
+      <div class="roadmap-item reveal">
+        <div class="roadmap-item-header">
+          <h4>Auto-detect PRs</h4>
+          <span class="roadmap-tag tag-planned">Planned</span>
+        </div>
+        <p>SubCat automatically detects your open PRs and surfaces their latest runs without any URL pasting.</p>
+      </div>
+      <div class="roadmap-item reveal">
+        <div class="roadmap-item-header">
+          <h4>GitHub App migration</h4>
+          <span class="roadmap-tag tag-planned">Planned</span>
+        </div>
+        <p>Move from OAuth App (full <code style="font-family:var(--font-mono);font-size:11px;color:var(--accent)">repo</code> scope) to GitHub App for granular, minimal permissions.</p>
+      </div>
+      <div class="roadmap-item reveal">
+        <div class="roadmap-item-header">
+          <h4>Windows &amp; Linux</h4>
+          <span class="roadmap-tag tag-exploring">Exploring</span>
+        </div>
+        <p>SubCat is Electron — cross-platform is possible. Investigating demand before committing to distribution.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JUMP INTERLUDE -->
+<section class="jump-section">
+  <div class="jump-inner">
+    <img class="jump-img" src="../assets/subcat-jump.png" alt="SubCat">
+    <div class="jump-text">
+      <h3>Polling every 15 seconds.<br>So you don't have to.</h3>
+      <p>SubCat runs quietly, watching your CI runs in real time. No browser tabs, no constant refreshing. Get a native macOS notification the moment something needs your attention.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<section class="cta-section" id="download">
+  <img class="cta-illo" src="../assets/little-subcat.png" alt="">
+  <div class="container">
+    <div class="section-eyebrow reveal" style="justify-content:center">Get started</div>
+    <h2 class="reveal">Stop guessing.<br><span class="accent-text">Start knowing.</span></h2>
+    <p class="reveal">Signed · Notarized · Auto-updating · Apple Silicon</p>
+    <div class="cta-btns reveal">
+      <a href="https://github.com/semisse/subcat/releases/latest" class="btn btn-primary">↓ Download for Mac</a>
+      <a href="https://github.com/semisse/subcat" class="btn btn-ghost">View source →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <img src="../assets/little-subcat.png" alt="">
+    subcat · MIT license · built with obsession
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/semisse/subcat">GitHub</a>
+    <a href="https://github.com/semisse/subcat/releases">Releases</a>
+    <a href="https://github.com/semisse/subcat/issues">Issues</a>
+    <a href="https://github.com/sponsors/semisse">Sponsor</a>
+  </div>
+</footer>
+
+<script>
+  // Scroll nav
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40));
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 70);
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  reveals.forEach(el => revealObs.observe(el));
+
+  // Hero mockup — run card + iter dots
+  const runCard = document.getElementById('runCard');
+  const iterDots = document.getElementById('iterDots');
+  const dotColors = ['pass','pass','fail','pass','run'];
+  const dotMap = { pass: '#2ecc71', fail: '#e74c3c', run: '#f39c12' };
+
+  setTimeout(() => {
+    runCard.classList.add('visible');
+    dotColors.forEach((type, i) => {
+      setTimeout(() => {
+        const d = document.createElement('div');
+        d.className = 'iter-dot';
+        d.style.background = dotMap[type];
+        if (type === 'run') d.style.animation = 'pulse-dot 1.5s ease-in-out infinite';
+        iterDots.appendChild(d);
+      }, 800 + i * 300);
+    });
+  }, 600);
+
+  // Repeat rows animate on scroll
+  const rrows = document.querySelectorAll('#repeatRows .rrow');
+  const flakeSummary = document.getElementById('flakeSummary');
+  const repeatObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      rrows.forEach((r, i) => setTimeout(() => r.classList.add('in'), i * 150));
+      setTimeout(() => flakeSummary.classList.add('in'), rrows.length * 150 + 350);
+      repeatObs.disconnect();
+    }
+  }, { threshold: 0.3 });
+  const rSection = document.getElementById('repeatRows');
+  if (rSection) repeatObs.observe(rSection);
+</script>
+</body>
+</html>
