@@ -553,6 +553,33 @@
     .jump-text h3 { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 10px; letter-spacing: -0.02em; }
     .jump-text p { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
 
+    /* ── DONATE ── */
+    .donate-section {
+      padding: 100px 0; border-top: 1px solid var(--border);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .donate-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(46,204,113,0.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .donate-inner { max-width: 560px; margin: 0 auto; padding: 0 48px; position: relative; z-index: 1; }
+    .donate-icon { font-size: 2.5rem; margin-bottom: 1.25rem; display: block; }
+    .donate-section h2 { font-size: clamp(24px, 4vw, 36px); margin-bottom: 16px; }
+    .donate-section p { font-size: 14px; color: var(--text-muted); line-height: 1.75; margin-bottom: 36px; }
+    .donate-btns { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .donate-btns .btn { font-size: 13px; padding: 14px 28px; }
+    .btn-donate {
+      background: rgba(46,204,113,0.12);
+      border: 1px solid rgba(46,204,113,0.3);
+      color: var(--green);
+    }
+    .btn-donate:hover {
+      background: rgba(46,204,113,0.2);
+      border-color: rgba(46,204,113,0.5);
+      box-shadow: 0 0 32px rgba(46,204,113,0.12);
+    }
+
     /* ── FOOTER CTA ── */
     .cta-section {
       padding: 120px 0; border-top: 1px solid var(--border);
@@ -953,6 +980,20 @@
     <div class="jump-text">
       <h3>Polling every 15 seconds.<br>So you don't have to.</h3>
       <p>SubCat runs quietly, watching your CI runs in real time. No browser tabs, no constant refreshing. Get a native macOS notification the moment something needs your attention.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DONATE -->
+<section class="donate-section" id="donate">
+  <div class="donate-inner">
+    <span class="donate-icon">☕</span>
+    <div class="section-eyebrow reveal" style="justify-content:center">Support SubCat</div>
+    <h2 class="reveal">SubCat is <span class="accent-text">free forever.</span><br>But coffee helps.</h2>
+    <p class="reveal">SubCat is MIT licensed and will always be free. If it saved you hours of debugging or helped you ship with more confidence, consider buying us a coffee — it keeps the late nights going and the features coming.</p>
+    <div class="donate-btns reveal">
+      <a href="https://github.com/sponsors/semisse" class="btn btn-donate">♥ Sponsor on GitHub</a>
+      <a href="https://buymeacoffee.com/semisse" class="btn btn-ghost" target="_blank" rel="noopener">☕ Buy me a coffee</a>
     </div>
   </div>
 </section>
