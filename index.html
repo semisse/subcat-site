@@ -119,6 +119,32 @@
       justify-content: center; font-size: 13px; padding: 12px;
     }
     .btn-dashed:hover { border-color: #888; color: var(--text); }
+    .btn-sponsor {
+      font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+      border-radius: 8px; padding: 9px 16px; cursor: pointer;
+      text-decoration: none; transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 6px; border: none;
+      color: var(--green);
+      background: rgba(46,204,113,0.08);
+      border: 1px solid rgba(46,204,113,0.25);
+      position: relative;
+    }
+    .btn-sponsor:hover {
+      background: rgba(46,204,113,0.16);
+      border-color: rgba(46,204,113,0.5);
+      box-shadow: 0 0 20px rgba(46,204,113,0.15);
+    }
+    .btn-sponsor .sponsor-heart {
+      display: inline-block;
+      animation: heart-beat 1.6s ease-in-out infinite;
+    }
+    @keyframes heart-beat {
+      0%,100% { transform: scale(1); }
+      14%      { transform: scale(1.25); }
+      28%      { transform: scale(1); }
+      42%      { transform: scale(1.15); }
+      56%      { transform: scale(1); }
+    }
 
     /* ── HERO ── */
     .hero {
@@ -380,7 +406,7 @@
     .flake-summary.in { opacity: 1; }
 
     /* Feature grid */
-    .feature-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
     .feature-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 12px; padding: 28px;
@@ -530,6 +556,9 @@
     .tag-next { background: rgba(243,156,18,0.14); border: 1px solid rgba(243,156,18,0.35); color: var(--orange); }
     .tag-planned { background: rgba(83,52,131,0.15); border: 1px solid rgba(83,52,131,0.35); color: var(--accent); }
     .tag-exploring { background: rgba(255,255,255,0.05); border: 1px solid var(--border-2); color: var(--text-muted); }
+    .tag-shipped { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: var(--green); }
+    .roadmap-item.shipped { opacity: 0.6; }
+    .roadmap-item.shipped h4 { text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.2); }
 
     /* ── JUMP INTERLUDE ── */
     .jump-section {
@@ -647,6 +676,7 @@
     <a href="#features" class="nav-link">Features</a>
     <a href="#roadmap" class="nav-link">Roadmap</a>
     <a href="https://github.com/semisse/subcat" class="nav-link">GitHub</a>
+    <a href="#donate" class="btn-sponsor"><span class="sponsor-heart">♥</span> Sponsor</a>
     <a href="#download" class="btn btn-primary">↓ Download</a>
   </div>
 </nav>
@@ -660,8 +690,8 @@
       <div class="eyebrow"><div class="eyebrow-dot"></div>macOS Developer Tool</div>
       <h1>Tired of babysitting<br><span class="accent-text">your pipelines?</span></h1>
       <p class="hero-sub">
-        SubCat watches your GitHub Actions runs and hunts down flaky tests — so you can stay in flow.
-        Run any workflow <strong>5×, 10×, N×</strong> with one click.
+        Paste a PR or workflow URL. Tell SubCat how many times to run it.
+        Go back to work. <strong>You'll be notified when you have an answer.</strong>
       </p>
       <div class="hero-actions">
         <a href="#download" class="btn btn-primary">↓ Download for Mac</a>
@@ -687,22 +717,22 @@
           <div class="mock-label">My PRs</div>
           <div class="mock-pr-list">
             <div class="mock-pr-row">
-              <span class="mock-pr-title">CSX-438 Enable accessibility unit tests</span>
+              <span class="mock-pr-title">AUTH-112 Migrate session tokens to httpOnly cookies</span>
               <span class="mock-pr-num">#16136</span>
             </div>
             <div class="mock-pr-row">
-              <span class="mock-pr-title">CSX-71 Fix race condition in version dropdown</span>
+              <span class="mock-pr-title">PERF-89 Lazy-load heavy chart dependencies</span>
               <span class="mock-pr-num">#16230</span>
             </div>
             <div class="mock-pr-row">
-              <span class="mock-pr-title">CSX-463 Add Karma to Jest migration prompt</span>
+              <span class="mock-pr-title">UI-341 Replace legacy modal with new dialog system</span>
               <span class="mock-pr-num">#16177</span>
             </div>
           </div>
 
           <div class="mock-run-card" id="runCard">
             <div class="mock-run-card-header">
-              <span class="mock-run-title">CSX-438 Enable accessibility unit tests</span>
+              <span class="mock-run-title">AUTH-112 Migrate session tokens to httpOnly cookies</span>
               <div class="mock-run-btns">
                 <button class="mock-run-btn">Open</button>
                 <button class="mock-run-btn">×</button>
@@ -731,7 +761,7 @@
     <div class="pain-layout">
       <div>
         <div class="section-eyebrow reveal">The problem</div>
-        <h2 class="reveal">Your CI is green.<br><span class="accent-text">Your tests aren't.</span></h2>
+        <h2 class="reveal">Your local runs are green.<br><span class="accent-text">Your pipelines aren't.</span></h2>
       </div>
       <div class="pain-cards reveal">
         <div class="pain-card">
@@ -742,17 +772,17 @@
         <div class="pain-card">
           <div class="pain-icon">⏱</div>
           <h3>Manual retry loops</h3>
-          <p>Engineers watching CI, clicking Re-run, pasting URLs in Slack. Hours lost every week.</p>
+          <p>Engineers watching CI, clicking Re-run. Repeat. Repeat. Repeat. Hours lost every week.</p>
         </div>
         <div class="pain-card">
           <div class="pain-icon">💸</div>
-          <h3>$299/month alternatives</h3>
-          <p>BuildPulse requires cloud hooks, org admin access, and a budget approval.</p>
+          <h3>Today's solutions cost a bunch of money</h3>
+          <p>BuildPulse requires cloud hooks, org admin access, and a budget approval and $299/month.</p>
         </div>
         <div class="pain-card">
           <div class="pain-icon">🔎</div>
           <h3>No isolation</h3>
-          <p>Most tools say "it failed" — not which test, not how often, not why.</p>
+          <p>Most tools only say "it failed", they don't say which test, not how often, not why.</p>
         </div>
       </div>
     </div>
@@ -785,12 +815,17 @@
       </div>
     </div>
 
-    <!-- 3 feature cards -->
+    <!-- 4 feature cards -->
     <div class="feature-grid">
       <div class="feature-card reveal">
         <div class="fc-icon">🔔</div>
         <h4>Watch Mode</h4>
         <p>Paste a GitHub Actions run URL. Get a native macOS notification when it finishes. No tab watching, no refresh loops.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon">↩</div>
+        <h4>Rerun Failed Only</h4>
+        <p>When a run fails, re-trigger only the failed jobs — not the full workflow. Faster flake confirmation, less CI spend.</p>
       </div>
       <div class="feature-card reveal">
         <div class="fc-icon">📋</div>
@@ -800,7 +835,7 @@
       <div class="feature-card reveal">
         <div class="fc-icon">🔗</div>
         <h4>PR Integration</h4>
-        <p>Paste a PR URL and SubCat resolves the workflows automatically. Pick which run to watch from a list of your open PRs.</p>
+        <p>Paste a PR URL and SubCat resolves the workflows automatically. SubCat auto-detects your open PRs — no URL needed.</p>
       </div>
     </div>
 
@@ -929,20 +964,6 @@
     <div class="roadmap-grid">
       <div class="roadmap-item reveal">
         <div class="roadmap-item-header">
-          <h4>Paste-and-go</h4>
-          <span class="roadmap-tag tag-next">Next</span>
-        </div>
-        <p>Paste a valid GitHub Actions URL and SubCat starts watching immediately — no extra click required.</p>
-      </div>
-      <div class="roadmap-item reveal">
-        <div class="roadmap-item-header">
-          <h4>Rerun failed only</h4>
-          <span class="roadmap-tag tag-next">Next</span>
-        </div>
-        <p>Re-trigger only the failed jobs instead of the full workflow. Faster flake confirmation, less CI spend.</p>
-      </div>
-      <div class="roadmap-item reveal">
-        <div class="roadmap-item-header">
           <h4>Watch without limit</h4>
           <span class="roadmap-tag tag-next">Next</span>
         </div>
@@ -950,10 +971,10 @@
       </div>
       <div class="roadmap-item reveal">
         <div class="roadmap-item-header">
-          <h4>Auto-detect PRs</h4>
-          <span class="roadmap-tag tag-planned">Planned</span>
+          <h4>Pin a workflow</h4>
+          <span class="roadmap-tag tag-next">Next</span>
         </div>
-        <p>SubCat automatically detects your open PRs and surfaces their latest runs without any URL pasting.</p>
+        <p>Paste a workflow URL (not a run) and SubCat tracks the latest run automatically — always up to date, no re-pasting on every push.</p>
       </div>
       <div class="roadmap-item reveal">
         <div class="roadmap-item-header">
@@ -968,6 +989,20 @@
           <span class="roadmap-tag tag-exploring">Exploring</span>
         </div>
         <p>SubCat is Electron — cross-platform is possible. Investigating demand before committing to distribution.</p>
+      </div>
+      <div class="roadmap-item shipped reveal">
+        <div class="roadmap-item-header">
+          <h4>Rerun failed only</h4>
+          <span class="roadmap-tag tag-shipped">Shipped</span>
+        </div>
+        <p>Re-trigger only the failed jobs instead of the full workflow. Faster flake confirmation, less CI spend.</p>
+      </div>
+      <div class="roadmap-item shipped reveal">
+        <div class="roadmap-item-header">
+          <h4>Auto-detect PRs</h4>
+          <span class="roadmap-tag tag-shipped">Shipped</span>
+        </div>
+        <p>SubCat automatically detects your open PRs and surfaces their latest runs without any URL pasting.</p>
       </div>
     </div>
   </div>
