@@ -146,6 +146,27 @@
       56%      { transform: scale(1); }
     }
 
+    /* ── RELEASE PILL ── */
+    .release-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--text-muted); text-decoration: none;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-2);
+      border-radius: 100px; padding: 5px 12px 5px 5px;
+      margin-bottom: 22px;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .release-pill:hover {
+      border-color: rgba(167,139,250,0.5);
+      background: rgba(167,139,250,0.06);
+      color: var(--text);
+    }
+.release-pill-arrow {
+      color: var(--accent); transition: transform 0.2s;
+    }
+    .release-pill:hover .release-pill-arrow { transform: translateX(3px); }
+
     /* ── HERO ── */
     .hero {
       position: relative; min-height: 100vh;
@@ -214,103 +235,12 @@
       text-transform: uppercase; letter-spacing: 0.1em;
     }
 
-    /* ── APP WINDOW MOCKUP ── */
-    .hero-mockup { animation: fadeUp 0.6s 0.15s ease both; position: relative; }
-    .hero-mockup::after {
-      content: '';
-      position: absolute; bottom: -60px; left: 5%; right: 5%; height: 60px;
-      background: radial-gradient(ellipse, rgba(83,52,131,0.4) 0%, transparent 70%);
-      filter: blur(14px);
-    }
-    .app-window {
-      background: var(--surface-2);
-      border: 1px solid var(--border-2);
-      border-radius: 12px; overflow: hidden;
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 80px rgba(0,0,0,0.55), 0 0 60px rgba(83,52,131,0.1);
-    }
-    .window-chrome {
-      background: var(--surface); border-bottom: 1px solid var(--border-2);
-      padding: 12px 16px; display: flex; align-items: center; gap: 10px;
-    }
-    .tls { display: flex; gap: 6px; }
-    .tl { width: 11px; height: 11px; border-radius: 50%; }
-    .tl-r { background: #ff5f57; } .tl-y { background: #febc2e; } .tl-g { background: #28c840; }
-    .win-title {
-      font-family: var(--font-sans); font-size: 13px; font-weight: 700;
-      color: var(--white); margin: 0 auto;
-      display: flex; align-items: center; gap: 7px;
-    }
-    .win-title img { width: 18px; height: 18px; object-fit: contain; }
-
-    .window-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
-
-    .mock-label {
-      font-family: var(--font-sans); font-size: 11px; font-weight: 600;
-      color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px;
-      padding: 0 2px; margin-bottom: 2px;
+    /* ── APP SCREENSHOT ── */
+    .hero-mockup { animation: fadeUp 0.6s 0.15s ease both; }
+    .app-screenshot {
+      width: 100%; border-radius: 12px; display: block;
     }
 
-    /* PR list (like in screenshot) */
-    .mock-pr-list {
-      border: 1px solid var(--border-2); border-radius: 10px; overflow: hidden;
-    }
-    .mock-pr-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 9px 12px; border-bottom: 1px solid #1e1e30;
-      cursor: pointer; transition: background 0.15s;
-    }
-    .mock-pr-row:last-child { border-bottom: none; }
-    .mock-pr-row:hover { background: rgba(255,255,255,0.03); }
-    .mock-pr-title { font-size: 12px; color: var(--text); }
-    .mock-pr-num { font-family: var(--font-mono); font-size: 11px; color: var(--text-sub); }
-
-    /* Selected run card — red border like screenshot */
-    .mock-run-card {
-      background: var(--surface); border: 1px solid rgba(231,76,60,0.7);
-      border-radius: 10px; padding: 12px 14px;
-      opacity: 0; transform: translateY(6px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-    .mock-run-card.visible { opacity: 1; transform: none; }
-    .mock-run-card-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .mock-run-title { font-size: 13px; font-weight: 600; color: var(--white); }
-    .mock-run-btns { display: flex; gap: 6px; }
-    .mock-run-btn {
-      font-family: var(--font-sans); font-size: 11px; font-weight: 600;
-      border: 1px solid var(--border-2); border-radius: 6px;
-      background: none; color: var(--text-muted); padding: 3px 10px; cursor: pointer;
-    }
-    .mock-run-status {
-      display: flex; align-items: center; gap: 7px;
-      font-size: 12px; color: var(--text-muted);
-    }
-    .sd { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .sd-fail { background: var(--red); }
-    .sd-pass { background: var(--green); }
-    .sd-run  { background: var(--orange); animation: pulse-dot 1.5s ease-in-out infinite; }
-    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-    .mock-repeat-row {
-      display: flex; align-items: center; gap: 8px;
-      border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px;
-    }
-    .mock-repeat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-sub); }
-    .mock-iter-dots { display: flex; gap: 4px; }
-    .iter-dot { width: 7px; height: 7px; border-radius: 50%; }
-
-    .mock-watch-btn {
-      font-family: var(--font-sans); font-size: 13px; font-weight: 600;
-      width: 100%; padding: 10px; background: none;
-      border: 1px dashed var(--white); border-radius: 8px;
-      color: var(--white); cursor: pointer; letter-spacing: 0.01em;
-      transition: border-color 0.2s, color 0.2s;
-      opacity: 0; animation: fadeIn 0.4s 1.8s ease forwards;
-    }
-    .mock-watch-btn:hover { border-color: #888; color: var(--text); }
-    @keyframes fadeIn { to { opacity: 1; } }
 
     /* ── SECTIONS ── */
     section { position: relative; z-index: 1; }
@@ -406,7 +336,7 @@
     .flake-summary.in { opacity: 1; }
 
     /* Feature grid */
-    .feature-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
     .feature-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 12px; padding: 28px;
@@ -653,7 +583,7 @@
       .hero-grid, .pain-layout, .feature-hero-card, .steps, .vs-grid, .roadmap-grid, .report-card, .oss-inner { grid-template-columns: 1fr; gap: 36px; }
       .container { padding: 0 24px; }
       .pain-cards { grid-template-columns: 1fr; }
-      .feature-grid { grid-template-columns: 1fr; }
+      .feature-grid { grid-template-columns: 1fr 1fr; }
       .steps::before { display: none; }
       .step { padding: 0; text-align: left; display: flex; gap: 14px; align-items: flex-start; }
       .step-n { margin: 0; flex-shrink: 0; }
@@ -687,7 +617,11 @@
 
   <div class="hero-grid">
     <div class="hero-text">
-      <div class="eyebrow"><div class="eyebrow-dot"></div>macOS Developer Tool</div>
+      <a href="https://github.com/semisse/subcat/releases/latest" class="release-pill" target="_blank" rel="noopener">
+        New v1.1.1 is out!
+        <span class="release-pill-arrow">→</span>
+      </a>
+      <div class="eyebrow"><div class="eyebrow-dot"></div>macOS &amp; Linux Developer Tool</div>
       <h1>Tired of babysitting<br><span class="accent-text">your pipelines?</span></h1>
       <p class="hero-sub">
         Paste a PR or workflow URL. Tell SubCat how many times to run it.
@@ -699,58 +633,12 @@
       </div>
       <div class="hero-footnote">
         <span class="os-badge">Open Source</span>
-        Signed &amp; notarized · Apple Silicon · Free
+        Signed &amp; notarized · Apple Silicon &amp; Intel · Free
       </div>
     </div>
 
     <div class="hero-mockup">
-      <div class="app-window">
-        <div class="window-chrome">
-          <div class="tls">
-            <div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div>
-          </div>
-          <div class="win-title">
-            <img src="assets/little-subcat.png" alt=""> SubCat
-          </div>
-        </div>
-        <div class="window-body">
-          <div class="mock-label">My PRs</div>
-          <div class="mock-pr-list">
-            <div class="mock-pr-row">
-              <span class="mock-pr-title">AUTH-112 Migrate session tokens to httpOnly cookies</span>
-              <span class="mock-pr-num">#16136</span>
-            </div>
-            <div class="mock-pr-row">
-              <span class="mock-pr-title">PERF-89 Lazy-load heavy chart dependencies</span>
-              <span class="mock-pr-num">#16230</span>
-            </div>
-            <div class="mock-pr-row">
-              <span class="mock-pr-title">UI-341 Replace legacy modal with new dialog system</span>
-              <span class="mock-pr-num">#16177</span>
-            </div>
-          </div>
-
-          <div class="mock-run-card" id="runCard">
-            <div class="mock-run-card-header">
-              <span class="mock-run-title">AUTH-112 Migrate session tokens to httpOnly cookies</span>
-              <div class="mock-run-btns">
-                <button class="mock-run-btn">Open</button>
-                <button class="mock-run-btn">×</button>
-              </div>
-            </div>
-            <div class="mock-run-status">
-              <div class="sd sd-fail"></div>
-              failure · run 2 of 5
-            </div>
-            <div class="mock-repeat-row">
-              <span class="mock-repeat-label">×5 repeat</span>
-              <div class="mock-iter-dots" id="iterDots"></div>
-            </div>
-          </div>
-
-          <button class="mock-watch-btn">+ Watch Run</button>
-        </div>
-      </div>
+      <img src="assets/screenshot-hero.png" alt="SubCat app — dashboard" class="app-screenshot">
     </div>
   </div>
 </section>
@@ -836,6 +724,16 @@
         <div class="fc-icon">🔗</div>
         <h4>PR Integration</h4>
         <p>Paste a PR URL and SubCat resolves the workflows automatically. SubCat auto-detects your open PRs — no URL needed.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon">📌</div>
+        <h4>Pinned Workflows</h4>
+        <p>Pin a workflow URL and SubCat tracks the latest run automatically — always up to date without re-pasting on every push.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon">✕</div>
+        <h4>Cancel Runs</h4>
+        <p>Cancel an in-progress run directly from SubCat — no need to open GitHub. Full run lifecycle control from your menu bar.</p>
       </div>
     </div>
 
@@ -942,7 +840,7 @@
       <div class="vs-card us reveal">
         <div class="vs-label us">SubCat</div>
         <div class="vs-price us">Free</div>
-        <div class="vs-period">forever · MIT licensed · open source</div>
+        <div class="vs-period">forever · MIT licensed · macOS &amp; Linux</div>
         <div class="vs-row"><div class="chk chk-y">✓</div>Flaky test detection</div>
         <div class="vs-row"><div class="chk chk-y">✓</div>No webhooks, no org access needed</div>
         <div class="vs-row"><div class="chk chk-y">✓</div>Runs locally — nothing leaves your machine</div>
@@ -969,10 +867,10 @@
         </div>
         <p>Continuous watch mode — keep re-running a workflow until you manually stop it. Essential for overnight flake hunts.</p>
       </div>
-      <div class="roadmap-item reveal">
+      <div class="roadmap-item shipped reveal">
         <div class="roadmap-item-header">
           <h4>Pin a workflow</h4>
-          <span class="roadmap-tag tag-next">Next</span>
+          <span class="roadmap-tag tag-shipped">Shipped</span>
         </div>
         <p>Paste a workflow URL (not a run) and SubCat tracks the latest run automatically — always up to date, no re-pasting on every push.</p>
       </div>
@@ -983,12 +881,12 @@
         </div>
         <p>Move from OAuth App (full <code style="font-family:var(--font-mono);font-size:11px;color:var(--accent)">repo</code> scope) to GitHub App for granular, minimal permissions.</p>
       </div>
-      <div class="roadmap-item reveal">
+      <div class="roadmap-item shipped reveal">
         <div class="roadmap-item-header">
-          <h4>Windows &amp; Linux</h4>
-          <span class="roadmap-tag tag-exploring">Exploring</span>
+          <h4>Linux</h4>
+          <span class="roadmap-tag tag-shipped">Shipped</span>
         </div>
-        <p>SubCat is Electron — cross-platform is possible. Investigating demand before committing to distribution.</p>
+        <p>SubCat runs on Linux. Windows is possible — investigating demand before committing to distribution.</p>
       </div>
       <div class="roadmap-item shipped reveal">
         <div class="roadmap-item-header">
@@ -1039,7 +937,7 @@
   <div class="container">
     <div class="section-eyebrow reveal" style="justify-content:center">Get started</div>
     <h2 class="reveal">Stop guessing.<br><span class="accent-text">Start knowing.</span></h2>
-    <p class="reveal">Signed · Notarized · Auto-updating · Apple Silicon</p>
+    <p class="reveal">Signed · Notarized · Auto-updating · macOS &amp; Linux</p>
     <div class="cta-btns reveal">
       <a href="https://github.com/semisse/subcat/releases/latest" class="btn btn-primary">↓ Download for Mac</a>
       <a href="https://github.com/semisse/subcat" class="btn btn-ghost">View source →</a>
@@ -1081,24 +979,6 @@
   }, { threshold: 0.08 });
   reveals.forEach(el => revealObs.observe(el));
 
-  // Hero mockup — run card + iter dots
-  const runCard = document.getElementById('runCard');
-  const iterDots = document.getElementById('iterDots');
-  const dotColors = ['pass','pass','fail','pass','run'];
-  const dotMap = { pass: '#2ecc71', fail: '#e74c3c', run: '#f39c12' };
-
-  setTimeout(() => {
-    runCard.classList.add('visible');
-    dotColors.forEach((type, i) => {
-      setTimeout(() => {
-        const d = document.createElement('div');
-        d.className = 'iter-dot';
-        d.style.background = dotMap[type];
-        if (type === 'run') d.style.animation = 'pulse-dot 1.5s ease-in-out infinite';
-        iterDots.appendChild(d);
-      }, 800 + i * 300);
-    });
-  }, 600);
 
   // Repeat rows animate on scroll
   const rrows = document.querySelectorAll('#repeatRows .rrow');
