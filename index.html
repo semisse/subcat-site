@@ -5,10 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubCat — Hunt Down Flaky Tests</title>
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* ── SELF-HOSTED FONTS ── */
+    @font-face {
+      font-family: 'IBM Plex Sans'; font-style: normal; font-weight: 300 700; font-display: swap;
+      src: url('fonts/ibm-plex-sans-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'IBM Plex Sans'; font-style: normal; font-weight: 300 700; font-display: swap;
+      src: url('fonts/ibm-plex-sans-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap;
+      src: url('fonts/ibm-plex-mono-400-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap;
+      src: url('fonts/ibm-plex-mono-400-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap;
+      src: url('fonts/ibm-plex-mono-500-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap;
+      src: url('fonts/ibm-plex-mono-500-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap;
+      src: url('fonts/ibm-plex-mono-600-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap;
+      src: url('fonts/ibm-plex-mono-600-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 700; font-display: swap;
+      src: url('fonts/ibm-plex-mono-700-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 700; font-display: swap;
+      src: url('fonts/ibm-plex-mono-700-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -95,6 +144,80 @@
     .nav-right { display: flex; align-items: center; gap: 28px; }
     .nav-link { font-size: 13px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
     .nav-link:hover { color: var(--text); }
+
+    /* ── HAMBURGER ── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 40px; height: 40px;
+      background: none; border: none; cursor: pointer;
+      padding: 8px; border-radius: 8px;
+      transition: background 0.2s;
+      z-index: 101;
+    }
+    .hamburger:hover { background: rgba(255,255,255,0.06); }
+    .hamburger-line {
+      display: block;
+      width: 20px; height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.25s;
+      transform-origin: center;
+    }
+    .hamburger.open .hamburger-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open .hamburger-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open .hamburger-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ── MOBILE MENU ── */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 60px; left: 0; right: 0;
+      background: rgba(26,26,46,0.97);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-2);
+      flex-direction: column;
+      gap: 2px;
+      z-index: 99;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s, padding 0.35s;
+      padding: 0 24px;
+    }
+    .mobile-menu.open {
+      max-height: 420px;
+      opacity: 1;
+      padding: 12px 24px 24px;
+    }
+    .mobile-menu .m-link {
+      font-family: var(--font-sans); font-size: 15px; font-weight: 500;
+      color: var(--text-muted); text-decoration: none;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+      display: block;
+      transition: color 0.2s;
+    }
+    .mobile-menu .m-link:hover { color: var(--text); }
+    .mobile-menu .m-link:last-of-type { border-bottom: none; }
+    .mobile-menu .m-actions {
+      display: flex; gap: 10px; padding-top: 16px;
+    }
+    .mobile-menu .m-actions .btn-sponsor,
+    .mobile-menu .m-actions .btn {
+      flex: 1; justify-content: center; font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-right { display: none; }
+      .hamburger { display: flex; }
+      .mobile-menu { display: flex; }
+    }
 
     .btn {
       font-family: var(--font-mono); font-size: 12px; font-weight: 600;
@@ -609,7 +732,22 @@
     <a href="#donate" class="btn-sponsor"><span class="sponsor-heart">♥</span> Sponsor</a>
     <a href="#download" class="btn btn-primary">↓ Download</a>
   </div>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+  </button>
 </nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features" class="m-link">Features</a>
+  <a href="#roadmap" class="m-link">Roadmap</a>
+  <a href="https://github.com/semisse/subcat" class="m-link">GitHub ↗</a>
+  <div class="m-actions">
+    <a href="#donate" class="btn-sponsor"><span class="sponsor-heart">♥</span> Sponsor</a>
+    <a href="#download" class="btn btn-primary">↓ Download</a>
+  </div>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -959,6 +1097,7 @@
     <a href="https://github.com/semisse/subcat/releases">Releases</a>
     <a href="https://github.com/semisse/subcat/issues">Issues</a>
     <a href="https://github.com/sponsors/semisse">Sponsor</a>
+    <a href="privacy.html">Privacy Policy</a>
   </div>
 </footer>
 
@@ -966,6 +1105,25 @@
   // Scroll nav
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40));
+
+  // Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  function closeMenu() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }
+  hamburger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+  });
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+  document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target) && !mobileMenu.contains(e.target)) closeMenu();
+  });
 
   // Reveal on scroll
   const reveals = document.querySelectorAll('.reveal');

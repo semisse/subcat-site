@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — SubCat</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    @font-face {
+      font-family: 'IBM Plex Sans'; font-style: normal; font-weight: 300 700; font-display: swap;
+      src: url('fonts/ibm-plex-sans-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'IBM Plex Sans'; font-style: normal; font-weight: 300 700; font-display: swap;
+      src: url('fonts/ibm-plex-sans-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400 700; font-display: swap;
+      src: url('fonts/ibm-plex-mono-400-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #1a1a2e;
+      --surface:    #16213e;
+      --border:     #2a2a3e;
+      --border-2:   #333;
+      --text:       #e0e0e0;
+      --text-muted: #888;
+      --text-dim:   #444;
+      --white:      #ffffff;
+      --accent:     #a78bfa;
+      --grad-text:  linear-gradient(135deg, #93c5fd, #c4b5fd);
+      --grad-ui:    linear-gradient(135deg, #0f3460, #533483);
+      --green:      #2ecc71;
+      --font-sans:  'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono:  'IBM Plex Mono', 'SF Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(ellipse 60% 35% at 50% 0%, rgba(83,52,131,0.14) 0%, transparent 70%),
+        linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+      background-size: auto, 52px 52px, 52px 52px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 48px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border-2);
+      background: rgba(26,26,46,0.94);
+      backdrop-filter: blur(16px);
+    }
+    .nav-logo {
+      font-family: var(--font-sans); font-size: 18px; font-weight: 700;
+      color: var(--white); text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .nav-logo img { width: 28px; height: 28px; object-fit: contain; }
+    .nav-back {
+      font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+      color: var(--text-muted); text-decoration: none;
+      display: flex; align-items: center; gap: 6px;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--text); }
+
+    /* CONTENT */
+    .page-wrap {
+      position: relative; z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 120px 24px 80px;
+    }
+
+    .page-label {
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: var(--font-sans); font-size: clamp(28px, 5vw, 40px);
+      font-weight: 700; line-height: 1.2;
+      color: var(--white); margin-bottom: 12px;
+    }
+
+    .page-meta {
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--text-muted); margin-bottom: 56px;
+    }
+
+    .section {
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      font-family: var(--font-sans); font-size: 17px; font-weight: 600;
+      color: var(--white); margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    p {
+      color: var(--text-muted); font-size: 15px; margin-bottom: 14px;
+    }
+
+    p:last-child { margin-bottom: 0; }
+
+    .highlight-box {
+      background: rgba(46,204,113,0.06);
+      border: 1px solid rgba(46,204,113,0.2);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+    }
+    .highlight-box p {
+      color: #7de8b0;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    code {
+      font-family: var(--font-mono); font-size: 12px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 4px; padding: 2px 6px;
+      color: var(--accent-bright, #c4b5fd);
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* FOOTER */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 28px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
+    }
+    .footer-left {
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .footer-left img { width: 18px; opacity: 0.45; object-fit: contain; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      footer { padding: 24px 20px; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="assets/little-subcat.png" alt="SubCat">
+    SubCat
+  </a>
+  <a href="/" class="nav-back">← Back to site</a>
+</nav>
+
+<div class="page-wrap">
+  <p class="page-label">Legal</p>
+  <h1>Privacy Policy</h1>
+  <p class="page-meta">Last updated: April 2026 · Applies to subcat.app</p>
+
+  <div class="section">
+    <div class="highlight-box">
+      <p>Short version: SubCat does not track you, does not use cookies, and does not collect personal data. Your GitHub token never leaves your machine.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>1. Who we are</h2>
+    <p>SubCat is a macOS desktop application developed by <a href="https://todaywedream.com" target="_blank" rel="noopener">Today We Dream</a>. This privacy policy covers the SubCat website (this site) and not the application itself, which processes data locally on your device.</p>
+  </div>
+
+  <div class="section">
+    <h2>2. Data we collect on this website</h2>
+    <p>This website does not use analytics, tracking pixels, advertising networks, or third-party cookies. We do not set any cookies.</p>
+    <p>Like all web servers, our hosting provider may retain standard server logs that include your IP address, browser user agent, and the pages you requested. These logs exist for security and diagnostic purposes, are not linked to any identity, and are not shared with third parties. They are typically retained for a short period and then deleted.</p>
+  </div>
+
+  <div class="section">
+    <h2>3. Fonts and third-party assets</h2>
+    <p>This site uses <strong>IBM Plex Sans</strong> and <strong>IBM Plex Mono</strong>, served directly from our own server. No requests are made to Google Fonts or any other external font service. No third-party scripts or stylesheets are loaded.</p>
+  </div>
+
+  <div class="section">
+    <h2>4. The SubCat application</h2>
+    <p>The SubCat desktop application operates entirely on your local machine. Your GitHub personal access token is stored encrypted using macOS <code>safeStorage</code> and never transmitted to our servers or any third party. SubCat has no telemetry, no crash reporting to our servers, and no analytics.</p>
+    <p>When you use SubCat, it communicates directly with the <a href="https://docs.github.com/en/rest" target="_blank" rel="noopener">GitHub API</a> on your behalf, using your token. Please refer to <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub's Privacy Statement</a> for how GitHub handles that data.</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Downloads</h2>
+    <p>SubCat releases are hosted on GitHub Releases. When you download the application, GitHub processes your request. Their privacy policy applies to that interaction.</p>
+  </div>
+
+  <div class="section">
+    <h2>6. Your rights under GDPR</h2>
+    <p>If you are located in the European Economic Area, you have rights under the General Data Protection Regulation (GDPR), including the right to access, correct, or delete personal data we hold about you.</p>
+    <p>Because we do not collect or store personal data beyond transient server logs (which contain no account or identity information), there is generally nothing to access, correct, or delete. If you have questions, contact us at the address below.</p>
+  </div>
+
+  <div class="section">
+    <h2>7. Data controller</h2>
+    <p>Today We Dream<br>
+    <a href="https://todaywedream.com" target="_blank" rel="noopener">todaywedream.com</a><br>
+    For privacy inquiries: <a href="https://github.com/semisse/subcat/issues" target="_blank" rel="noopener">open a GitHub issue</a> or contact us via the GitHub profile.</p>
+  </div>
+
+  <div class="section">
+    <h2>8. Changes to this policy</h2>
+    <p>If we make material changes to this policy, we will update the "Last updated" date at the top. We encourage you to review this page periodically.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-left">
+    <img src="assets/little-subcat.png" alt="">
+    subcat · MIT license
+  </div>
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="https://github.com/semisse/subcat">GitHub</a>
+    <a href="https://github.com/sponsors/semisse">Sponsor</a>
+  </div>
+</footer>
+
+</body>
+</html>
