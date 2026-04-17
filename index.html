@@ -285,7 +285,27 @@
       background: rgba(167,139,250,0.06);
       color: var(--text);
     }
-.release-pill-arrow {
+    .release-pill-badge {
+      font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent-bright);
+      background: rgba(167,139,250,0.14);
+      border: 1px solid rgba(167,139,250,0.35);
+      border-radius: 100px;
+      padding: 2px 9px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .release-pill:hover .release-pill-badge {
+      background: rgba(167,139,250,0.22);
+      border-color: rgba(167,139,250,0.55);
+    }
+    .release-pill-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: glow-pulse 2s ease-in-out infinite;
+    }
+    .release-pill-arrow {
       color: var(--accent); transition: transform 0.2s;
     }
     .release-pill:hover .release-pill-arrow { transform: translateX(3px); }
@@ -424,6 +444,18 @@
       border-radius: 4px; padding: 4px 10px;
       display: inline-block; margin-bottom: 18px;
     }
+    .feature-badge-new {
+      position: relative; padding-left: 24px;
+      background: linear-gradient(135deg, rgba(83,52,131,0.3), rgba(83,52,131,0.14));
+      border-color: rgba(167,139,250,0.5);
+    }
+    .feature-badge-new::before {
+      content: ''; position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: glow-pulse 2s ease-in-out infinite;
+    }
     .feature-hero-card h3 {
       font-size: 30px; font-weight: 700; line-height: 1.1;
       color: var(--white); margin-bottom: 14px; letter-spacing: -0.025em;
@@ -457,6 +489,127 @@
       opacity: 0; transition: opacity 0.4s ease;
     }
     .flake-summary.in { opacity: 1; }
+
+    /* Lab Test visual */
+    .lab-mockup {
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      padding: 18px;
+      font-family: var(--font-mono); font-size: 11px;
+      display: flex; flex-direction: column; gap: 14px;
+      position: relative; overflow: hidden;
+    }
+    .lab-mockup::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(167,139,250,0.5), transparent);
+    }
+    .lab-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .lab-head-left { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .lab-flask {
+      width: 24px; height: 24px; border-radius: 6px;
+      background: rgba(167,139,250,0.12);
+      border: 1px solid rgba(167,139,250,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; flex-shrink: 0;
+    }
+    .lab-cmd {
+      color: var(--text); font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lab-cmd-prompt { color: var(--accent); margin-right: 6px; }
+    .lab-preset {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+      color: var(--orange);
+      background: rgba(243,156,18,0.1);
+      border: 1px solid rgba(243,156,18,0.4);
+      border-radius: 4px; padding: 3px 8px;
+      flex-shrink: 0;
+    }
+    .lab-env {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed var(--border-2);
+      border-radius: 6px;
+      font-size: 10px;
+    }
+    .lab-env-label {
+      color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.14em;
+      font-size: 9px; font-weight: 600;
+    }
+    .lab-env-pair { display: inline-flex; align-items: center; gap: 5px; }
+    .lab-env-k { color: var(--text-sub); }
+    .lab-env-v { color: var(--accent-bright); font-weight: 500; }
+    .lab-env-sep { color: var(--text-dim); }
+    .lab-stress-label {
+      font-size: 9px; font-weight: 600; letter-spacing: 0.14em;
+      color: var(--text-dim); text-transform: uppercase;
+      margin-bottom: -4px;
+    }
+    .lab-stress {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .lab-stress-toggle {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 500;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border-2);
+      border-radius: 6px; padding: 4px 9px;
+      opacity: 0; transform: translateY(4px);
+      transition: opacity 0.35s ease, transform 0.35s ease,
+                  background 0.25s, border-color 0.25s, color 0.25s;
+    }
+    .lab-stress-toggle.in { opacity: 1; transform: none; }
+    .lab-stress-toggle::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border-2);
+      transition: background 0.25s, box-shadow 0.25s;
+    }
+    .lab-stress-toggle.on {
+      color: var(--accent-bright);
+      background: rgba(83,52,131,0.18);
+      border-color: rgba(167,139,250,0.45);
+    }
+    .lab-stress-toggle.on::before {
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+    .lab-progress-meta {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+      font-size: 10px; color: var(--text-muted);
+    }
+    .lab-progress-meta strong { color: var(--white); font-weight: 600; }
+    .lab-counts { font-size: 10px; font-weight: 600; letter-spacing: 0.02em; }
+    .lab-counts span { margin: 0 2px; }
+    .lab-bar {
+      height: 4px; background: var(--border);
+      border-radius: 2px; overflow: hidden; position: relative;
+    }
+    .lab-bar-fill {
+      height: 100%; width: 0;
+      background: linear-gradient(90deg, var(--purple-mid), var(--accent));
+      border-radius: 2px;
+      transition: width 1.6s cubic-bezier(0.25,0.46,0.45,0.94);
+      box-shadow: 0 0 10px rgba(167,139,250,0.35);
+    }
+    .lab-bar-fill.run { width: 70%; }
+    .lab-fail {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 10px;
+      background: rgba(231,76,60,0.06);
+      border-left: 2px solid var(--red);
+      border-radius: 3px;
+      padding: 7px 10px;
+      opacity: 0; transform: translateY(4px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .lab-fail.in { opacity: 1; transform: none; }
+    .lab-fail-label { color: var(--red); font-weight: 600; letter-spacing: 0.08em; }
+    .lab-fail-test { color: #f87171; }
 
     /* Feature grid */
     .feature-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
@@ -755,8 +908,9 @@
 
   <div class="hero-grid">
     <div class="hero-text">
-      <a href="https://github.com/semisse/subcat/releases/latest" class="release-pill" target="_blank" rel="noopener">
-        New v1.1.1 is out!
+      <a href="#features" class="release-pill">
+        <span class="release-pill-badge">v1.2</span>
+        Lab Test is here — reproduce CI flakiness locally
         <span class="release-pill-arrow">→</span>
       </a>
       <div class="eyebrow"><div class="eyebrow-dot"></div>macOS &amp; Linux Developer Tool</div>
@@ -766,12 +920,12 @@
         Go back to work. <strong>You'll be notified when you have an answer.</strong>
       </p>
       <div class="hero-actions">
-        <a href="#download" class="btn btn-primary">↓ Download for Mac</a>
+        <a href="#download" class="btn btn-primary" data-dl>↓ Download for Mac</a>
         <a href="https://github.com/semisse/subcat" class="btn btn-ghost">View on GitHub</a>
       </div>
       <div class="hero-footnote">
         <span class="os-badge">Open Source</span>
-        Signed &amp; notarized · Apple Silicon &amp; Intel · Free
+        <span data-dl-meta>Signed &amp; notarized · Apple Silicon &amp; Intel · Free</span>
       </div>
     </div>
 
@@ -823,26 +977,68 @@
       <h2 class="reveal">Built for one thing.<br><span class="accent-text">Done right.</span></h2>
     </div>
 
-    <!-- Repeat Mode -->
+    <!-- Lab Test — new Core differentiator in v1.2 -->
     <div class="feature-hero-card reveal">
       <div>
-        <div class="feature-badge">Core differentiator</div>
-        <h3>Repeat Mode.<br><span class="accent-text">Find the flake.</span></h3>
-        <p>Set any run to execute N times automatically. Each iteration is tracked, logged, and compared. Flaky tests expose themselves when you run them enough.</p>
-        <p style="font-size:12px;color:var(--text-dim);font-family:var(--font-mono)">No webhooks. No org admin. No SaaS. Paste a URL. Set a repeat count.</p>
+        <div class="feature-badge feature-badge-new">New in v1.2 — Core differentiator</div>
+        <h3>Lab Test.<br><span class="accent-text">Reproduce CI flakiness locally.</span></h3>
+        <p>Point it at your repo. Pick a test command. SubCat runs it in a Docker container with CI-matched CPU and memory, repeated N times, streaming live output. Pass/fail/flaky counts with the failing test names — no CI round-trip, no 40-minute feedback loop.</p>
+        <p style="font-size:12px;color:var(--text-dim);font-family:var(--font-mono)">Playwright · Jest · Vitest · Nx. Stress factors (network latency, packet loss, CPU contention, stale reads) optional. Env file injection and custom install commands supported.</p>
       </div>
-      <div class="repeat-rows" id="repeatRows">
-        <div class="rrow"><span class="rnum">1×</span><div class="rbar"><div class="rbar-fill fill-green" style="width:100%"></div></div><span class="rresult c-green">PASS</span></div>
-        <div class="rrow"><span class="rnum">2×</span><div class="rbar"><div class="rbar-fill fill-red" style="width:100%"></div></div><span class="rresult c-red">FAIL</span></div>
-        <div class="rrow"><span class="rnum">3×</span><div class="rbar"><div class="rbar-fill fill-green" style="width:100%"></div></div><span class="rresult c-green">PASS</span></div>
-        <div class="rrow"><span class="rnum">4×</span><div class="rbar"><div class="rbar-fill fill-red" style="width:100%"></div></div><span class="rresult c-red">FAIL</span></div>
-        <div class="rrow"><span class="rnum">5×</span><div class="rbar"><div class="rbar-fill fill-run"></div></div><span class="rresult c-orange">…</span></div>
-        <div class="flake-summary" id="flakeSummary">⚠ Flake rate: 2/5 · UserAuthTest · SessionTokenTest</div>
+      <div class="lab-mockup" id="labMockup">
+        <div class="lab-head">
+          <div class="lab-head-left">
+            <span class="lab-flask">🧪</span>
+            <span class="lab-cmd"><span class="lab-cmd-prompt">$</span>npx playwright test</span>
+          </div>
+          <span class="lab-preset">MEDIUM</span>
+        </div>
+        <div class="lab-env">
+          <span class="lab-env-label">CI-matched</span>
+          <span class="lab-env-pair"><span class="lab-env-k">cpu</span><span class="lab-env-v">4 cores</span></span>
+          <span class="lab-env-sep">·</span>
+          <span class="lab-env-pair"><span class="lab-env-k">ram</span><span class="lab-env-v">14 GB</span></span>
+          <span class="lab-env-sep">·</span>
+          <span class="lab-env-pair"><span class="lab-env-k">os</span><span class="lab-env-v">ubuntu-22.04</span></span>
+        </div>
+        <div class="lab-stress-label">Stress factors</div>
+        <div class="lab-stress">
+          <span class="lab-stress-toggle on">Latency 150ms</span>
+          <span class="lab-stress-toggle">Packet loss</span>
+          <span class="lab-stress-toggle on">CPU contention</span>
+          <span class="lab-stress-toggle">Stale reads</span>
+        </div>
+        <div class="lab-progress-meta">
+          <span>Iteration <strong>7</strong> of 10</span>
+          <span class="lab-counts">
+            <span class="c-green">4 pass</span>·<span class="c-red">2 fail</span>·<span class="c-orange">1 flaky</span>
+          </span>
+        </div>
+        <div class="lab-bar"><div class="lab-bar-fill" id="labBar"></div></div>
+        <div class="lab-fail" id="labFail">
+          <span class="lab-fail-label">FAIL</span>
+          <span class="lab-fail-test">checkout.spec.ts › applies coupon code</span>
+        </div>
       </div>
     </div>
 
-    <!-- 4 feature cards -->
+    <!-- feature cards -->
     <div class="feature-grid">
+      <div class="feature-card reveal">
+        <div class="fc-icon">🧪</div>
+        <h4>Stress Factors</h4>
+        <p>Simulate CI conditions that don't show up on your laptop. Network latency, packet loss, CPU contention, file descriptor limits, timezone, stale reads. One toggle each, or Light / Medium / Heavy presets.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon">⚙</div>
+        <h4>Works with your stack</h4>
+        <p>Playwright uses <code style="font-family:var(--font-mono);font-size:11px;color:var(--accent-bright);background:rgba(83,52,131,0.18);border-radius:3px;padding:1px 5px">--repeat-each</code>. Jest, Vitest, and Nx fall back to a shell loop with iteration sentinels so progress tracking works for every test runner, not just one.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon">🔁</div>
+        <h4>Repeat Mode</h4>
+        <p>Set any GitHub Actions run to execute N times automatically. Each iteration is tracked, logged, and compared. Flaky tests expose themselves when you run them enough.</p>
+      </div>
       <div class="feature-card reveal">
         <div class="fc-icon">🔔</div>
         <h4>Watch Mode</h4>
@@ -881,6 +1077,7 @@
         <div class="feature-badge" style="color:var(--green);background:rgba(46,204,113,0.1);border-color:rgba(46,204,113,0.3)">Report Generation</div>
         <h4>Markdown reports.<br>Built-in.</h4>
         <p>After every repeat run, SubCat exports a structured <code style="font-family:var(--font-mono);font-size:12px;background:rgba(255,255,255,0.07);border-radius:4px;padding:2px 6px">.md</code> report with a table of results, clickable run links, and per-iteration failed test names. Drop it in a PR comment or your team's wiki.</p>
+        <p style="font-size:13px;color:var(--text-sub)">New in v1.2: root-cause hints and artifact links for every failed iteration, straight from the drill-down viewer.</p>
         <p>No extra tooling. No parsing. One click.</p>
       </div>
       <div class="report-preview">
@@ -1077,7 +1274,7 @@
     <h2 class="reveal">Stop guessing.<br><span class="accent-text">Start knowing.</span></h2>
     <p class="reveal">Signed · Notarized · Auto-updating · macOS &amp; Linux</p>
     <div class="cta-btns reveal">
-      <a href="https://github.com/semisse/subcat/releases/latest" class="btn btn-primary">↓ Download for Mac</a>
+      <a href="https://github.com/semisse/subcat/releases/latest" class="btn btn-primary" data-dl>↓ Download for Mac</a>
       <a href="https://github.com/semisse/subcat" class="btn btn-ghost">View source →</a>
     </div>
   </div>
@@ -1102,6 +1299,19 @@
 </footer>
 
 <script>
+  // OS detection — swap download button label when visiting from Linux
+  (() => {
+    const ua = navigator.userAgent || '';
+    const isAndroid = /Android/i.test(ua);
+    const isLinux = /Linux|X11/i.test(ua) && !isAndroid;
+    if (!isLinux) return;
+    document.querySelectorAll('[data-dl]').forEach(el => {
+      el.textContent = el.textContent.replace('Mac', 'Linux');
+    });
+    const meta = document.querySelector('[data-dl-meta]');
+    if (meta) meta.textContent = 'AppImage · DEB · x86_64 · Free';
+  })();
+
   // Scroll nav
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40));
@@ -1138,18 +1348,22 @@
   reveals.forEach(el => revealObs.observe(el));
 
 
-  // Repeat rows animate on scroll
-  const rrows = document.querySelectorAll('#repeatRows .rrow');
-  const flakeSummary = document.getElementById('flakeSummary');
-  const repeatObs = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      rrows.forEach((r, i) => setTimeout(() => r.classList.add('in'), i * 150));
-      setTimeout(() => flakeSummary.classList.add('in'), rrows.length * 150 + 350);
-      repeatObs.disconnect();
-    }
-  }, { threshold: 0.3 });
-  const rSection = document.getElementById('repeatRows');
-  if (rSection) repeatObs.observe(rSection);
+  // Lab Test mockup — staggered reveal on scroll
+  const labMockup = document.getElementById('labMockup');
+  if (labMockup) {
+    const toggles = labMockup.querySelectorAll('.lab-stress-toggle');
+    const labBar = document.getElementById('labBar');
+    const labFail = document.getElementById('labFail');
+    const labObs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        toggles.forEach((t, i) => setTimeout(() => t.classList.add('in'), 120 + i * 110));
+        setTimeout(() => labBar && labBar.classList.add('run'), 900);
+        setTimeout(() => labFail && labFail.classList.add('in'), 2400);
+        labObs.disconnect();
+      }
+    }, { threshold: 0.25 });
+    labObs.observe(labMockup);
+  }
 </script>
 </body>
 </html>
